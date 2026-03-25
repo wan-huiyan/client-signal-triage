@@ -1,0 +1,229 @@
+{
+  "skill": "client-signal-triage",
+  "version": "1.1.0",
+  "triggers": [
+    {"prompt": "The client sent an email with these fields: loyalty_tier, signup_date, referral_source", "should_trigger": true},
+    {"prompt": "Here's a list of signals we should evaluate: demo_requested, plan_type, last_login_days", "should_trigger": true},
+    {"prompt": "Can you check which of these fields are available in BQ? company_size, industry, annual_revenue", "should_trigger": true},
+    {"prompt": "Triage these candidate features against our warehouse", "should_trigger": true},
+    {"prompt": "The client's funnel definition mentions these fields: page_views, form_submissions, demo_bookings", "should_trigger": true},
+    {"prompt": "Check data availability for these signals: tenure_months, product_tier, support_tickets", "should_trigger": true},
+    {"prompt": "Which of these fields should we add to the model? lead_source, campaign_status, account_rating", "should_trigger": true},
+    {"prompt": "Parse this client email for potential model signals", "should_trigger": true},
+    {"prompt": "We got a new field list from the client team — here are the columns", "should_trigger": true},
+    {"prompt": "Assess these candidate data sources for the propensity model", "should_trigger": true},
+    {"prompt": "What signals can we actually use from this list of CRM fields?", "should_trigger": true},
+    {"prompt": "The client mentioned these data points in the meeting: plan type, usage frequency, support tickets", "should_trigger": true},
+    {"prompt": "Here are the CRM fields they want us to look at: LeadSource, AccountType, OpportunityStage", "should_trigger": true},
+    {"prompt": "Which of these Salesforce fields exist in our warehouse? AccountSource, CampaignId", "should_trigger": true},
+    {"prompt": "Bulk check these columns for coverage in BigQuery", "should_trigger": true},
+    {"prompt": "We received a field mapping document — what's usable?", "should_trigger": true},
+    {"prompt": "Sort these candidate signals by feasibility", "should_trigger": true},
+    {"prompt": "Run signal triage on these fields from the client spreadsheet", "should_trigger": true},
+    {"prompt": "Classify these candidate features as GO or NO-GO", "should_trigger": true},
+    {"prompt": "Data availability check for client fields: zip_code, annual_spend, referral_count", "should_trigger": true},
+    {"prompt": "Evaluate the AUC of the loyalty_tier feature against our conversion target", "should_trigger": false},
+    {"prompt": "Should we extend the training window from 6 months to 12 months?", "should_trigger": false},
+    {"prompt": "What hyperparameters should I tune for the XGBoost model?", "should_trigger": false},
+    {"prompt": "Deploy this model to production on Cloud Run", "should_trigger": false},
+    {"prompt": "Review this pull request for the feature pipeline", "should_trigger": false},
+    {"prompt": "Fix this failing test in the scoring module", "should_trigger": false},
+    {"prompt": "What model architecture should I use for churn prediction?", "should_trigger": false},
+    {"prompt": "Run a deep diagnostic on conversion_flag — I need IV, PSI, and distribution plots", "should_trigger": false},
+    {"prompt": "Compare XGBoost vs LightGBM for this use case", "should_trigger": false},
+    {"prompt": "Write unit tests for the pipeline", "should_trigger": false}
+  ],
+  "test_cases": [
+    {
+      "id": "parse-email-fields",
+      "prompt": "The client sent this email: 'We'd like you to look at Account Type, Annual Revenue, Number of Employees, Industry, Lead Source.' Parse these for triage.",
+      "assertions": [
+        {"type": "contains", "value": "account_type", "description": "Normalizes Account Type to snake_case"},
+        {"type": "contains", "value": "annual_revenue", "description": "Extracts annual revenue field"},
+        {"type": "format", "value": "markdown_table", "description": "Outputs candidate list as table"},
+        {"type": "contains", "value": "CRM", "description": "Groups fields by CRM domain"}
+      ]
+    },
+    {
+      "id": "check-decision-matrix",
+      "prompt": "Classify these signals: loyalty_tier (34% coverage, has created_date), demo_flag (8% coverage, has event_timestamp), fax_opt_in (0.006%, 6 rows), household_income (12%, no timestamp)",
+      "assertions": [
+        {"type": "contains", "value": "GO", "description": "Classifies loyalty_tier as GO"},
+        {"type": "contains", "value": "NO-GO", "description": "Classifies fax_opt_in as NO-GO"},
+        {"type": "contains", "value": "DEFER", "description": "Classifies household_income as DEFER"},
+        {"type": "pattern", "value": "Signal.*Coverage.*Assessment", "description": "Produces signal inventory table with required columns"}
+      ]
+    },
+    {
+      "id": "check-temporal-guard",
+      "prompt": "Assess temporal feasibility for: created_date (has timestamp), gender (static attribute), last_login_date (derived from event log), satisfaction_score (no timestamp found)",
+      "assertions": [
+        {"type": "contains", "value": "static", "description": "Identifies gender as static attribute"},
+        {"type": "contains", "value": "temporal", "description": "Discusses temporal guard assessment"},
+        {"type": "contains", "value": "DEFER", "description": "Defers satisfaction_score without temporal guard"},
+        {"type": "excludes", "value": "GO.*satisfaction_score", "description": "Does not classify unguarded field as GO"}
+      ]
+    },
+    {
+      "id": "check-composite-identification",
+      "prompt": "Check for composites among: sat_score (40%), act_score (35%), country_code (95%), has_filed_tax_return (10%), loyalty_tier (50%), purchase_stage (60%)",
+      "assertions": [
+        {"type": "contains", "value": "composite", "description": "Identifies composite signal opportunities"},
+        {"type": "contains", "value": "sat_score", "description": "Identifies SAT+ACT coverage composite"},
+        {"type": "contains", "value": "country_code", "description": "Identifies disambiguation composite"},
+        {"type": "pattern", "value": "(coverage|disambiguation|interaction)", "description": "Uses composite category terminology"}
+      ]
+    },
+    {
+      "id": "check-ethical-review-flagging",
+      "prompt": "Triage these fields: gender, race, disability_status, plan_type, signup_source",
+      "assertions": [
+        {"type": "contains", "value": "ethical", "description": "Flags demographic fields for ethical review"},
+        {"type": "contains", "value": "gender", "description": "Specifically flags gender"},
+        {"type": "contains", "value": "race", "description": "Specifically flags race"},
+        {"type": "excludes", "value": "GO.*gender.*without.*review", "description": "Does not auto-approve demographics without review"}
+      ]
+    },
+    {
+      "id": "check-handoff-format",
+      "prompt": "Triage complete. 4 GO, 3 DEFER, 2 NO-GO from 9 signals. Generate the handoff summary.",
+      "assertions": [
+        {"type": "contains", "value": "ml-feature-evaluator", "description": "References handoff skill"},
+        {"type": "contains", "value": "Next Steps", "description": "Includes Next Steps section"},
+        {"type": "pattern", "value": "\\d+ of \\d+.*GO", "description": "Summarizes GO count as X of Y"},
+        {"type": "contains", "value": "DEFER", "description": "Lists DEFER revisit conditions"}
+      ]
+    },
+    {
+      "id": "check-coverage-query-generation",
+      "prompt": "Generate the coverage check SQL for loyalty_program_tier in BigQuery table crm_account",
+      "assertions": [
+        {"type": "contains", "value": "COUNTIF", "description": "Uses COUNTIF for coverage calculation"},
+        {"type": "contains", "value": "coverage_pct", "description": "Computes coverage percentage"},
+        {"type": "contains", "value": "APPROX_TOP_COUNT", "description": "Gets top values for categorical fields"},
+        {"type": "format", "value": "sql_code_block", "description": "Wraps SQL in code block"}
+      ]
+    },
+    {
+      "id": "transform-field-names",
+      "prompt": "Parse and normalize these client field names: 'Lead Source', 'Annual Revenue', 'Number Of Employees', 'CampaignMemberStatus'",
+      "assertions": [
+        {"type": "contains", "value": "lead_source", "description": "Converts Lead Source to snake_case"},
+        {"type": "contains", "value": "annual_revenue", "description": "Converts Annual Revenue to snake_case"},
+        {"type": "contains", "value": "number_of_employees", "description": "Handles multi-word conversion"},
+        {"type": "contains", "value": "campaign_member_status", "description": "Handles CamelCase conversion"}
+      ]
+    }
+  ],
+  "edge_cases": [
+    {
+      "id": "empty-field-list",
+      "category": "minimal_input",
+      "prompt": "The client email doesn't mention any specific fields, just says 'we have lots of data we'd like to integrate'",
+      "expected_behavior": "Does not proceed with triage. Asks for specific field list or offers schema exploration.",
+      "assertions": [
+        {"type": "excludes", "value": "GO.*field", "description": "Does not hallucinate fields to classify"},
+        {"type": "contains", "value": "clarif", "description": "Requests clarification from user"}
+      ]
+    },
+    {
+      "id": "all-nogo-results",
+      "category": "minimal_input",
+      "prompt": "All 8 fields came back with <2% coverage or no temporal guard. Everything is NO-GO.",
+      "expected_behavior": "Reports all NO-GO, checks composites, suggests alternatives.",
+      "assertions": [
+        {"type": "contains", "value": "NO-GO", "description": "Reports all as NO-GO"},
+        {"type": "contains", "value": "composite", "description": "Still checks composite opportunities"}
+      ]
+    },
+    {
+      "id": "no-warehouse-access",
+      "category": "missing_deps",
+      "prompt": "I can't connect to BigQuery right now. Can you still triage these fields: loyalty_tier, signup_date?",
+      "expected_behavior": "Best-effort classification based on metadata. Marks unverified signals.",
+      "assertions": [
+        {"type": "contains", "value": "best-effort", "description": "Acknowledges limited classification"},
+        {"type": "contains", "value": "unverified", "description": "Marks signals as unverified"}
+      ]
+    },
+    {
+      "id": "duplicate-field-names",
+      "category": "invalid_input",
+      "prompt": "Check these fields: Lead Source, lead_source, LEAD_SOURCE, LeadSource — same thing four ways",
+      "expected_behavior": "Deduplicates to single candidate, notes variations.",
+      "assertions": [
+        {"type": "contains", "value": "lead_source", "description": "Normalizes to single canonical name"},
+        {"type": "excludes", "value": "4 candidates", "description": "Does not count duplicates as separate candidates"}
+      ]
+    },
+    {
+      "id": "mixed-warehouse-types",
+      "category": "scale_extreme",
+      "prompt": "Some fields are in BigQuery, some in Postgres, some in Snowflake. Triage: user_id, plan_type, payment_status",
+      "expected_behavior": "Uses correct SQL dialect per warehouse, notes source for each field.",
+      "assertions": [
+        {"type": "contains", "value": "BigQuery", "description": "References BigQuery dialect"},
+        {"type": "contains", "value": "Postgres", "description": "References Postgres dialect"}
+      ]
+    },
+    {
+      "id": "sensitive-pii-fields",
+      "category": "dangerous_input",
+      "prompt": "Triage: ssn_last_four, date_of_birth, gender, race, disability_status, religion, annual_income",
+      "expected_behavior": "Flags PII and demographic fields. Does not auto-approve without review.",
+      "assertions": [
+        {"type": "contains", "value": "ethical", "description": "Flags ethical review requirement"},
+        {"type": "contains", "value": "PII", "description": "Identifies PII concern for SSN"}
+      ]
+    },
+    {
+      "id": "very-large-batch",
+      "category": "scale_extreme",
+      "prompt": "The client sent 150 candidate fields in a spreadsheet. How should we approach this?",
+      "expected_behavior": "Groups by domain, batches queries, produces scannable output.",
+      "assertions": [
+        {"type": "contains", "value": "group", "description": "Groups fields by domain"},
+        {"type": "contains", "value": "batch", "description": "Batches queries for efficiency"}
+      ]
+    },
+    {
+      "id": "ambiguous-single-feature",
+      "category": "invalid_input",
+      "prompt": "Can you check if loyalty_tier is a good feature?",
+      "expected_behavior": "Recognizes single-feature ambiguity. Routes to ml-feature-evaluator or does minimal triage.",
+      "assertions": [
+        {"type": "contains", "value": "ml-feature-evaluator", "description": "References the deep diagnostic skill"}
+      ]
+    },
+    {
+      "id": "no-information-schema",
+      "category": "missing_deps",
+      "prompt": "INFORMATION_SCHEMA access is denied. Can you still check plan_type and signup_date?",
+      "expected_behavior": "Falls back to SELECT with LIMIT queries.",
+      "assertions": [
+        {"type": "contains", "value": "SELECT", "description": "Uses direct SELECT as fallback"},
+        {"type": "contains", "value": "LIMIT", "description": "Applies LIMIT for safe fallback queries"}
+      ]
+    },
+    {
+      "id": "malformed-field-list",
+      "category": "malformed_input",
+      "prompt": "Here are the fields: ,,, loyalty tier,, , annual revenue ,  , ,lead source,",
+      "expected_behavior": "Strips empty entries and whitespace, extracts 3 valid fields.",
+      "assertions": [
+        {"type": "contains", "value": "loyalty_tier", "description": "Extracts and normalizes despite malformed input"},
+        {"type": "excludes", "value": "empty", "description": "Does not include empty entries as candidates"}
+      ]
+    },
+    {
+      "id": "unicode-field-names",
+      "category": "unicode",
+      "prompt": "Check these fields from the international client: código_postal, número_empleados, fecha_creación",
+      "expected_behavior": "Handles unicode field names, attempts to find matching warehouse columns.",
+      "assertions": [
+        {"type": "contains", "value": "código_postal", "description": "Preserves unicode field names"},
+        {"type": "contains", "value": "warehouse", "description": "Attempts warehouse lookup despite unicode names"}
+      ]
+    }
+  ]
+}

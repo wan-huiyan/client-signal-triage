@@ -87,7 +87,7 @@ Supports BigQuery, Snowflake, and Postgres with warehouse-specific SQL templates
 |-------|-------------------|
 | `ml-feature-evaluator` | Deep quantitative diagnostic of a single GO candidate |
 | `ml-training-window-assessor` | Questions about extending training history or lookforward windows |
-| `brainstorming` | Open-ended "what features could we add?" before you have a candidate list |
+| [`brainstorming`](https://github.com/obra/superpowers) | Open-ended "what features could we add?" before you have a candidate list |
 
 ## Limitations
 

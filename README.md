@@ -1,4 +1,5 @@
 # Client Signal Triage
+[![GitHub release](https://img.shields.io/github/v/release/wan-huiyan/client-signal-triage)](https://github.com/wan-huiyan/client-signal-triage/releases) [![Claude Code](https://img.shields.io/badge/Claude_Code-skill-orange)](https://claude.com/claude-code) [![license](https://img.shields.io/github/license/wan-huiyan/client-signal-triage)](LICENSE) [![last commit](https://img.shields.io/github/last-commit/wan-huiyan/client-signal-triage)](https://github.com/wan-huiyan/client-signal-triage/commits)
 
 Batch triage candidate data signals from client emails, CRM field lists, and funnel definitions into GO/DEFER/NO-GO decisions.
 

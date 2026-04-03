@@ -1,7 +1,7 @@
 # Client Signal Triage
 [![GitHub release](https://img.shields.io/github/v/release/wan-huiyan/client-signal-triage)](https://github.com/wan-huiyan/client-signal-triage/releases) [![Claude Code](https://img.shields.io/badge/Claude_Code-skill-orange)](https://claude.com/claude-code) [![license](https://img.shields.io/github/license/wan-huiyan/client-signal-triage)](LICENSE) [![last commit](https://img.shields.io/github/last-commit/wan-huiyan/client-signal-triage)](https://github.com/wan-huiyan/client-signal-triage/commits)
 
-Batch triage candidate data signals from client emails, CRM field lists, and funnel definitions into GO/DEFER/NO-GO decisions.
+When a client sends 15 CRM fields to evaluate for a model, manually checking each one for coverage, temporal safety, and composite potential takes hours. This skill does it systematically in minutes — GO/DEFER/NO-GO with evidence.
 
 When a client sends a list of 15 CRM fields they want evaluated for a churn model, this skill systematically checks each one against your data warehouse — coverage, temporal safety, composite potential — and produces a prioritized signal inventory in minutes instead of hours.
 

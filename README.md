@@ -82,6 +82,11 @@ The skill follows a 6-phase workflow:
 
 Supports BigQuery, Snowflake, and Postgres with warehouse-specific SQL templates.
 
+## Requirements
+
+- Claude Code v1.0+
+- Access to your data warehouse (BigQuery, Snowflake, or similar) for coverage checks
+
 ## Related Skills
 
 | Skill | When to Use Instead |

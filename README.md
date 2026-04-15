@@ -36,15 +36,27 @@ Claude: [Runs 6-phase triage workflow]
 
 ## Installation
 
-### Claude Code
+**Claude Code (plugin install — recommended):**
+```bash
+# Add the marketplace, then install the plugin
+claude plugin marketplace add wan-huiyan/client-signal-triage
+claude plugin install client-signal-triage@wan-huiyan-client-signal-triage
+```
 
+**Claude Code (git clone):**
 ```bash
 git clone https://github.com/wan-huiyan/client-signal-triage.git ~/.claude/skills/client-signal-triage
 ```
 
-### Cursor
+**Cursor** (2.4+):
+```bash
+# Per-project rule (most reliable)
+mkdir -p .cursor/rules
+# Copy plugins/client-signal-triage/SKILL.md content into .cursor/rules/client-signal-triage.mdc with alwaysApply: true
 
-Copy the contents of `SKILL.md` into a per-project rule (`.cursor/rules/client-signal-triage.mdc`).
+# Or via npx skills CLI
+npx skills add wan-huiyan/client-signal-triage --global
+```
 
 ## What You Get
 
